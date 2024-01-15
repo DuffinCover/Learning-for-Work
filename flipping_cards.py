@@ -14,6 +14,8 @@ def set_up_cards():
     cards = []
     for i in range(4):
         cards.append(np.random.choice([False,True]))
+    if check_win(cards):
+        cards = set_up_cards()
     return cards
 
 
@@ -28,8 +30,19 @@ def rotate_table(cards):
     cards = temp
     return cards
 
+def rotate_to_the_left(cards):
+    temp = cards[1:]
+    temp.append(cards[0])
+    return temp
+
 def flip_card(cards, direction):
     cards[direction] = not cards[direction]
+
+
+def flip_n_cards(cards, n):
+    choices = random.sample(directions, n)
+    for choice in choices:
+        flip_card(cards, choice)    
 
 
 def compute_method_stats(all_attempts, max_attempts, fewest_attempts):
@@ -64,45 +77,6 @@ def random_flip_cards(cards):
     return iterations
 
 
-# takes around 4.5 flips
-def if_flip(cards):
-    iterations=0
-    while not check_win(cards):
-        if(cards[NORTH] == False):
-            flip_card(cards, NORTH)
-        else:
-            flip_card(cards, SOUTH) 
-        cards = rotate_table(cards)
-        iterations = iterations+1
-    return iterations
-
-
-
-def flip_three_then_four_repeating(cards):
-    iterations=0
-    while not check_win(cards):
-        # keeps the cards in the same group, just "inverses" them
-        flip_four(cards)
-        if not check_win(cards):
-            iterations = iterations +1
-            cards = rotate_table(cards)
-            # flip three will almost always put the cards into the "off by one" group. Otherwise it puts them in win/lose
-            flip_three(cards)
-        
-        cards = rotate_table(cards)
-        iterations = iterations+1
-    return iterations
-
-
-def flip_three(cards):
-    choices = random.sample(directions, 3)
-    for choice in choices:
-        cards[choice] = not cards[choice]
-
-
-def flip_four(cards):
-    for direction in directions:
-        cards[direction] = not cards[direction]
 
 
 def test_theory():
@@ -111,7 +85,7 @@ def test_theory():
     fewest_attempts = math.inf
     for i in range(10000):
         cards = set_up_cards()
-        test = random_flip_cards(cards)
+        test = flip_three_then_four_repeating(cards)
         if test > max_attempts:
             max_attempts = test
         if test < fewest_attempts:
