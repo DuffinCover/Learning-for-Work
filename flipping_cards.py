@@ -1,6 +1,6 @@
 import numpy as np
 import random
-import math
+import itertools
 
 
 NORTH = 0
@@ -10,10 +10,12 @@ WEST = 3
 
 directions = [NORTH, EAST, SOUTH, WEST]
 
+cardstates = [True, False]
+
 def set_up_cards():
     cards = []
     for i in range(4):
-        cards.append(np.random.choice([False,True]))
+        cards.append(np.random.choice(cardstates))
     if check_win(cards):
         cards = set_up_cards()
     return cards
@@ -52,29 +54,40 @@ def compute_method_stats(all_attempts, max_attempts, fewest_attempts):
     print("Fewest number flips neaded: {0}".format(fewest_attempts))
 
 
+def list_all_possible_card_states():
+    # https://stackoverflow.com/questions/54059917/generate-all-length-n-permutations-of-true-false
+    return [list(i) for i in itertools.product(cardstates, repeat=4)]
 
+
+def list_all_flip_combos():
+    # https://blog.enterprisedna.co/how-to-generate-all-combinations-of-a-list-in-python/
+    # there is also a helpful stackoverflow which shows the same thing
+    combos = []
+    for i in range(1,5):
+        combos.append(list(itertools.combinations(directions, i)))
+    return combos
 
 
 # Takes around 17 flips
-def only_flip_north(cards):
-    iterations=0
-    while check_win(cards) == False:
-        flip_card(cards, NORTH)
-        cards = rotate_table(cards)
-        iterations = iterations+1
-    return iterations
+# def only_flip_north(cards):
+#     iterations=0
+#     while check_win(cards) == False:
+#         flip_card(cards, NORTH)
+#         cards = rotate_table(cards)
+#         iterations = iterations+1
+#     return iterations
 
 
 
-# Takes around 17 flips
-def random_flip_cards(cards):
-    iterations=0
-    while check_win(cards) == False:
-        choice = np.random.choice(directions)
-        flip_card(cards, choice)
-        cards = rotate_table(cards)
-        iterations = iterations+1
-    return iterations
+# # Takes around 17 flips
+# def random_flip_cards(cards):
+#     iterations=0
+#     while check_win(cards) == False:
+#         choice = np.random.choice(directions)
+#         flip_card(cards, choice)
+#         cards = rotate_table(cards)
+#         iterations = iterations+1
+#     return iterations
 
 
 
@@ -95,4 +108,7 @@ def test_theory():
 
 
 
-test_theory()
+# test_theory()
+
+# print(list_all_possible_card_states())
+print(list_all_flip_combos())
